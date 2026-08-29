@@ -1,0 +1,151 @@
+/* ==========================================================================
+   SAMADHAN SETU — Subtle Jharkhand Tribal & Geometric Art Design Tokens
+   Inspired by Sohrai & Khovar geometric aesthetics, Sal forest textures,
+   and modern public innovation connectivity.
+   ========================================================================== */
+
+:root {
+  /* Jharkhand Earth & Forest Palette */
+  --jh-terracotta: #C25E30;
+  --jh-terracotta-dark: #A1461D;
+  --jh-terracotta-light: #F4E8E1;
+  --jh-sal-green: #24543D;
+  --jh-sal-green-light: #EBF3EE;
+  --jh-sal-green-dark: #173828;
+  --jh-ochre: #D97706;
+  --jh-ochre-light: #FEF3C7;
+  --jh-charcoal: #1C2421;
+  --jh-sand: #FAF8F5;
+  --jh-sand-dark: #ECE5DC;
+  --jh-copper: #E67E22;
+  --jh-slate-dark: #0F172A;
+  --jh-slate-subtle: #334155;
+  --jh-accent-cyan: #0D9488;
+}
+
+/* Subtle Geometric Tribal Border Strips (Sohrai-inspired geometric triangles & diamonds) */
+.tribal-border-top {
+  position: relative;
+}
+.tribal-border-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--jh-terracotta) 0,
+    var(--jh-terracotta) 8px,
+    var(--jh-ochre) 8px,
+    var(--jh-ochre) 16px,
+    var(--jh-sal-green) 16px,
+    var(--jh-sal-green) 24px,
+    transparent 24px,
+    transparent 28px
+  );
+  opacity: 0.85;
+}
+
+.tribal-border-bottom {
+  position: relative;
+}
+.tribal-border-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--jh-sal-green) 0,
+    var(--jh-sal-green) 8px,
+    var(--jh-ochre) 8px,
+    var(--jh-ochre) 16px,
+    var(--jh-terracotta) 16px,
+    var(--jh-terracotta) 24px,
+    transparent 24px,
+    transparent 28px
+  );
+  opacity: 0.85;
+}
+
+/* Subtle Geometric Tribal Motif Divider */
+.tribal-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 1.5rem auto;
+  width: 100%;
+  max-width: 320px;
+}
+.tribal-divider::before,
+.tribal-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #C25E30, transparent);
+}
+.tribal-divider-diamonds {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.tribal-diamond {
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  background-color: var(--jh-terracotta);
+  border-radius: 1px;
+}
+.tribal-diamond.sal {
+  background-color: var(--jh-sal-green);
+  width: 11px;
+  height: 11px;
+}
+.tribal-diamond.ochre {
+  background-color: var(--jh-ochre);
+}
+
+/* Light geometric background watermarks */
+.bg-tribal-subtle {
+  background-image: radial-gradient(#C25E30 0.75px, transparent 0.75px), radial-gradient(#24543D 0.75px, #FAF8F5 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  background-color: #FCFBF9;
+}
+
+.bg-tribal-dark-subtle {
+  background-image: radial-gradient(rgba(194, 94, 48, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Subtle frame corner ornaments */
+.tribal-corner-frame {
+  position: relative;
+}
+.tribal-corner-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-top: 2px solid var(--jh-terracotta);
+  border-left: 2px solid var(--jh-terracotta);
+  pointer-events: none;
+}
+.tribal-corner-frame::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  border-bottom: 2px solid var(--jh-sal-green);
+  border-right: 2px solid var(--jh-sal-green);
+  pointer-events: none;
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samadhan Setu — Societal Innovation Collaboration Portal | SIH26043</title>
+  
+  <meta name="description" content="A public-impact digital platform connecting citizens facing real-world societal problems with students, universities, institutions, industries and NGOs to crowdsource and implement solutions.">
+  <meta name="keywords" content="Samadhan Setu, Smart India Hackathon, SIH26043, Societal Innovation, Crowdsourcing, Jharkhand, Public Problem Portal, Hackathon">
+  <meta name="theme-color" content="#C25E30">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            terracotta: {
+              DEFAULT: '#C25E30',
+              50: '#FAF2ED',
+              100: '#F4E8E1',
+              500: '#C25E30',
+              600: '#A1461D',
+              700: '#833413'
+            },
+            sal: {
+              DEFAULT: '#24543D',
+              50: '#EBF3EE',
+              100: '#D5E6DC',
+              500: '#24543D',
+              600: '#1B422F',
+              700: '#122E20'
+            },
+            ochre: {
+              DEFAULT: '#D97706',
+              50: '#FEF3C7',
+              500: '#D97706',
+              600: '#B45309'
+            },
+            charcoal: '#1C2421',
+            sand: '#FAF8F5'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            heading: ['"Outfit"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom & Tribal Styles -->
+  <link rel="stylesheet" href="css/tribal-patterns.css">
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-[#FAF8F5] text-[#1E293B] antialiased selection:bg-[#C25E30] selection:text-white min-h-screen flex flex-col justify-between">
+
+  <!-- Main Application Mount Point -->
+  <div id="app-root" class="flex-grow flex flex-col">
+    <!-- Initial Loading Fallback Skeleton -->
+    <div class="h-screen flex flex-col items-center justify-center space-y-4">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C25E30] to-[#D97706] flex items-center justify-center text-white">
+        <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+          <path d="M12 2a10 10 0 0 1 10 10"></path>
+        </svg>
+      </div>
+      <div class="text-sm font-bold text-[#1C2421] font-heading">SAMADHAN SETU</div>
+      <div class="text-xs text-[#64748B]">Connecting Doors to Doors for an Innovative Tomorrow...</div>
+    </div>
+  </div>
+
+  <!-- Global Modal Mount Point -->
+  <div id="modal-root"></div>
+
+  <!-- Global Toast Notifications Mount Point -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Data Models -->
+  <script src="js/data/categories.js"></script>
+  <script src="js/data/challenges.js"></script>
+  <script src="js/data/stakeholders.js"></script>
+  <script src="js/data/stats.js"></script>
+
+  <!-- Phase 1: Dashboard UI Components -->
+  <script src="js/components/navbar.js"></script>
+  <script src="js/components/heroIllustration.js"></script>
+  <script src="js/components/hero.js"></script>
+  <script src="js/components/processSection.js"></script>
+  <script src="js/components/categorySection.js"></script>
+  <script src="js/components/featuredSection.js"></script>
+  <script src="js/components/impactStats.js"></script>
+  <script src="js/components/stakeholderSection.js"></script>
+  <script src="js/components/ctaSection.js"></script>
+  <script src="js/components/footer.js"></script>
+  
+  <!-- Phase 2: Exploration, Problem Raising, Collaboration & Solutions -->
+  <script src="js/components/explorePage.js"></script>
+  <script src="js/components/problemDetailsPage.js"></script>
+  <script src="js/components/raiseProblemPage.js"></script>
+  <script src="js/components/collaboratePage.js"></script>
+  <script src="js/components/proposeSolutionPage.js"></script>
+  
+  <!-- Phase 3: Solution Tracking & My Contributions -->
+  <script src="js/components/trackingPage.js"></script>
+  <script src="js/components/myContributionsPage.js"></script>
+
+  <!-- Auth & Info Pages -->
+  <script src="js/components/aboutPage.js"></script>
+  <script src="js/components/authPages.js"></script>
+  <script src="js/components/challengeModal.js"></script>
+
+  <!-- Application Controller -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>
