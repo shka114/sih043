@@ -20,10 +20,12 @@ async function analyzeProblemWithAI({ title, description, location = "" }) {
     throw new Error("Please provide a Problem Description before analyzing with AI.");
   }
 
+  const clientKey = localStorage.getItem('gemini_api_key') || '';
   const payload = {
     title: title.trim(),
     description: description.trim(),
-    location: (location || "").trim()
+    location: (location || "").trim(),
+    apiKey: clientKey
   };
 
   let response;

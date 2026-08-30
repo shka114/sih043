@@ -60,6 +60,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     os.chdir(DIRECTORY)
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("=" * 64)
         print("  SAMADHAN SETU — SIH26043 Platform Running")
@@ -72,4 +73,5 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             print("\nServer stopped.")
             sys.exit(0)
+
 

@@ -1,25 +1,36 @@
-// ==========================================================================
+﻿// ==========================================================================
 // SAMADHAN SETU — Explore Problems Component (Phase 1, 2, 3)
-// Includes honest "Smart Suggestions" / "Recommended Problems" section
+// Includes Smart Suggestions, District/Keyword Search & Category Filter
 // ==========================================================================
 
 let exploreSearchText = "";
 let exploreCategory = "all";
 
 function renderExplorePage() {
+  // Sync from hero search or category tile clicks
+  if (sessionStorage.getItem('samadhan_search_query')) {
+    exploreSearchText = sessionStorage.getItem('samadhan_search_query');
+    sessionStorage.removeItem('samadhan_search_query');
+  }
+  if (sessionStorage.getItem('samadhan_active_filter_category')) {
+    exploreCategory = sessionStorage.getItem('samadhan_active_filter_category');
+    sessionStorage.removeItem('samadhan_active_filter_category');
+  }
+
   const problems = ACTIVE_CHALLENGES.filter(p => {
     const q = exploreSearchText.trim().toLowerCase();
     const matchesSearch = !q ||
       p.title.toLowerCase().includes(q) ||
       (p.shortDescription && p.shortDescription.toLowerCase().includes(q)) ||
       (p.location && p.location.toLowerCase().includes(q)) ||
-      (p.id && p.id.toLowerCase().includes(q));
+      (p.id && p.id.toLowerCase().includes(q)) ||
+      (p.district && p.district.toLowerCase().includes(q));
 
     const matchesCat = exploreCategory === "all" || p.category === exploreCategory;
     return matchesSearch && matchesCat;
   });
 
-  // Smart Suggestions (Honest simple JavaScript matching)
+  // Smart Suggestions
   let recommendedProblems = [];
   let recommendationContext = "";
 
@@ -34,8 +45,7 @@ function renderExplorePage() {
     ).slice(0, 2);
     recommendationContext = `Problems matching "${exploreSearchText}":`;
   } else {
-    // Default recommendations (e.g. urgent or active problems)
-    recommendedProblems = ACTIVE_CHALLENGES.filter(p => p.urgency === 'High').slice(0, 2);
+    recommendedProblems = ACTIVE_CHALLENGES.filter(p => p.urgency === 'High' || p.urgency === 'Critical').slice(0, 2);
     recommendationContext = "High priority problems needing immediate attention:";
   }
 
@@ -90,7 +100,7 @@ function renderExplorePage() {
 
         </div>
 
-        <!-- Smart Suggestions / Recommended Problems (Phase 3 Honest Prototype) -->
+        <!-- Smart Suggestions / Recommended Problems -->
         ${recommendedProblems.length > 0 ? `
           <div class="p-4 bg-[#FAF2ED] rounded-xl border border-[#E8D0C3] space-y-2.5">
             <div class="flex items-center justify-between">
@@ -125,57 +135,56 @@ function renderExplorePage() {
           </div>
         ` : ''}
 
-        <!-- All Problems List -->
+        <!-- Problems List Grid -->
         <div class="space-y-4">
-          <div class="flex items-center justify-between text-xs text-gray-500 font-medium">
-            <span>All Listed Community Problems (${problems.length})</span>
-            <a href="#tracking" class="text-[#24543D] hover:underline flex items-center gap-1">
-              <span>View Solution Tracking Timeline</span>
-              <i data-lucide="arrow-right" class="w-3 h-3"></i>
-            </a>
+          <div class="flex items-center justify-between text-xs text-gray-500">
+            <span>Showing <strong>${problems.length}</strong> problem${problems.length === 1 ? '' : 's'}</span>
+            ${exploreSearchText || exploreCategory !== 'all' ? `
+              <button onclick="resetSearchFilters()" class="text-[#C25E30] hover:underline font-semibold">
+                Clear Filters
+              </button>
+            ` : ''}
           </div>
 
           ${problems.length > 0 ? `
-            <div class="space-y-3.5">
+            <div class="grid grid-cols-1 gap-4">
               ${problems.map(p => `
-                <div class="bg-white p-5 rounded-xl border border-[#E5DFD7] hover:border-[#C25E30] transition-colors shadow-2xs space-y-3">
+                <div class="bg-white p-5 rounded-2xl border border-[#E5DFD7] shadow-xs space-y-3.5 hover:border-[#C25E30] transition-colors">
                   
-                  <!-- Top Tags -->
-                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <!-- Top: ID, Category & Urgency -->
+                  <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                      <span class="font-mono font-bold text-[#C25E30] bg-[#FAF2ED] px-2 py-0.5 rounded border border-[#E8D0C3]">
+                      <span class="font-mono font-bold text-xs text-[#C25E30] bg-[#FAF2ED] px-2 py-0.5 rounded border border-[#E8D0C3]">
                         ${p.id}
                       </span>
-                      <span class="font-medium text-[#24543D] bg-[#EBF3EE] px-2.5 py-0.5 rounded">
+                      <span class="text-xs font-semibold text-[#24543D] bg-[#EBF3EE] px-2 py-0.5 rounded">
                         ${p.categoryName || p.category}
                       </span>
+                      ${p.urgency ? `
+                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded ${
+                          p.urgency === 'Critical' ? 'bg-red-50 text-red-700 border border-red-200' :
+                          p.urgency === 'High' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                          'bg-gray-50 text-gray-700 border border-gray-200'
+                        }">
+                          ${p.urgency} Urgency
+                        </span>
+                      ` : ''}
                     </div>
-                    
-                    <div class="flex items-center gap-2">
-                      <span class="text-[11px] font-semibold px-2 py-0.5 rounded ${
-                        p.urgency === 'High' || p.urgency === 'Critical' 
-                          ? 'bg-red-50 text-red-700 border border-red-200' 
-                          : 'bg-amber-50 text-amber-800 border border-amber-200'
-                      }">
-                        Urgency: ${p.urgency}
-                      </span>
-                      <span class="text-[11px] font-medium px-2 py-0.5 rounded ${
-                        p.status === 'Implementation / Pilot' || p.status === 'Resolved' ? 'bg-emerald-50 text-emerald-800' : 'bg-gray-100 text-gray-700'
-                      }">
-                        ${p.status || 'Open for Solutions'}
-                      </span>
-                    </div>
+
+                    <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      ${p.status || 'Open for Solutions'}
+                    </span>
                   </div>
 
-                  <!-- Problem Title -->
-                  <h2 class="text-base sm:text-lg font-bold text-[#1C2421] font-heading leading-snug">
-                    ${p.title}
-                  </h2>
-
-                  <!-- Short Description -->
-                  <p class="text-xs sm:text-sm text-[#475569] leading-relaxed">
-                    ${p.shortDescription || p.fullDescription}
-                  </p>
+                  <!-- Title & Description -->
+                  <div>
+                    <h3 class="text-base sm:text-lg font-bold text-[#1C2421] font-heading hover:text-[#C25E30] transition-colors">
+                      <a href="#problem-details?id=${p.id}">${p.title}</a>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-[#556987] mt-1 leading-relaxed line-clamp-2">
+                      ${p.shortDescription || p.fullDescription}
+                    </p>
+                  </div>
 
                   <!-- Footer: Location, Submitter & View Details -->
                   <div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#64748B]">
@@ -202,7 +211,7 @@ function renderExplorePage() {
             <div class="bg-white p-8 rounded-xl border border-[#E5DFD7] text-center space-y-3">
               <p class="text-sm font-semibold text-[#1C2421]">No problems match your search filter.</p>
               <p class="text-xs text-[#64748B]">Try searching for something else or submit a new problem.</p>
-              <button onclick="resetSearchFilters()" class="btn-secondary-setu px-4 py-1.5 text-xs font-semibold">
+              <button onclick="resetSearchFilters()" class="btn-secondary-setu px-4 py-1.5 text-xs font-semibold cursor-pointer">
                 Reset Filters
               </button>
             </div>

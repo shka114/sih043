@@ -63,13 +63,34 @@ function renderFeaturedSection() {
 
 function renderChallengeCard(challenge) {
   const isUpvoted = challenge.isSupportedByUser;
+  const supporterCount = challenge.supportersCount || 12;
+
+  // Category-specific fallback imagery
+  const categoryImages = {
+    "healthcare": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&auto=format&fit=crop&q=80",
+    "education": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80",
+    "employment": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&auto=format&fit=crop&q=80",
+    "environment": "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&auto=format&fit=crop&q=80",
+    "agriculture": "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80",
+    "infrastructure": "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80",
+    "rural-development": "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?w=800&auto=format&fit=crop&q=80"
+  };
+
+  const cardImage = challenge.image || categoryImages[challenge.category] || "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&auto=format&fit=crop&q=80";
+
+  let statusClass = "bg-amber-100 text-amber-800 border-amber-200";
+  if (challenge.stageIndex >= 6) {
+    statusClass = "bg-emerald-100 text-emerald-800 border-emerald-200";
+  } else if (challenge.stageIndex >= 4) {
+    statusClass = "bg-sky-100 text-sky-800 border-sky-200";
+  }
 
   return `
     <div class="bg-[#FAF8F5] border border-[#E6DED2] rounded-2xl overflow-hidden shadow-xs card-hover-lift flex flex-col justify-between transition-all duration-200 hover:border-[#C25E30] group">
       
       <!-- Card Image & Status Ribbon -->
       <div class="relative h-48 w-full overflow-hidden bg-gray-200">
-        <img src="${challenge.image}" 
+        <img src="${cardImage}" 
              alt="${challenge.title}" 
              loading="lazy"
              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -81,24 +102,24 @@ function renderChallengeCard(challenge) {
         <div class="absolute top-3 left-3">
           <span class="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-white/95 text-[#1C2421] shadow-xs backdrop-blur-xs">
             <span class="w-1.5 h-1.5 rounded-full bg-[#C25E30]"></span>
-            ${challenge.categoryName}
+            ${challenge.categoryName || challenge.category}
           </span>
         </div>
 
         <!-- Status Badge (Top Right) -->
         <div class="absolute top-3 right-3">
-          <span class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-md shadow-xs ${challenge.statusColor}">
-            ${challenge.status}
+          <span class="inline-block text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs border ${statusClass}">
+            ${challenge.status || 'Active Challenge'}
           </span>
         </div>
 
         <!-- Location Stamp (Bottom Left over image) -->
         <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-medium">
-          <span class="flex items-center gap-1 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px]">
+          <span class="flex items-center gap-1 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px]">
             <i data-lucide="map-pin" class="w-3 h-3 text-[#D97706]"></i>
-            ${challenge.location}
+            <span class="truncate max-w-[170px]">${challenge.location}</span>
           </span>
-          <span class="text-[11px] text-white/80 font-mono">${challenge.datePosted}</span>
+          <span class="text-[11px] text-white/90 font-mono">${challenge.datePosted || 'Active'}</span>
         </div>
       </div>
 
@@ -106,9 +127,11 @@ function renderChallengeCard(challenge) {
       <div class="p-5 flex flex-col flex-grow justify-between">
         <div>
           <div class="flex items-center justify-between gap-2 mb-1.5">
-            <span class="text-[11px] font-mono font-bold text-[#C25E30] bg-[#FAF2ED] px-2 py-0.5 rounded">${challenge.id}</span>
-            <span class="text-[11px] font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
-              ${challenge.urgency}
+            <span class="text-[11px] font-mono font-bold text-[#C25E30] bg-[#FAF2ED] px-2 py-0.5 rounded border border-[#E8D0C3]">${challenge.id}</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${
+              challenge.urgency === 'Critical' ? 'bg-red-100 text-red-800 border-red-200' : 'bg-orange-50 text-orange-800 border-orange-200'
+            }">
+              ${challenge.urgency} Urgency
             </span>
           </div>
 
@@ -123,7 +146,7 @@ function renderChallengeCard(challenge) {
           <!-- Affected Population Snippet -->
           <div class="bg-white/80 border border-[#EAE3D9] rounded-lg p-2.5 mb-4 flex items-center gap-2 text-xs text-[#475569]">
             <i data-lucide="users" class="w-4 h-4 text-[#24543D] shrink-0"></i>
-            <span class="font-medium truncate">Impacts: <strong class="text-[#1C2421]">${challenge.affectedPopulation}</strong></span>
+            <span class="font-medium truncate">Impact: <strong class="text-[#1C2421]">${challenge.affectedPopulation || 'Local Villagers'}</strong></span>
           </div>
         </div>
 
@@ -132,14 +155,14 @@ function renderChallengeCard(challenge) {
           
           <!-- Supporter Upvote Button -->
           <button onclick="handleUpvote('${challenge.id}', event)" 
-                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                     isUpvoted 
                       ? 'bg-[#C25E30] text-white' 
                       : 'bg-white text-[#475569] border border-[#E5DFD7] hover:border-[#C25E30] hover:text-[#C25E30]'
                   }"
                   title="Support this community problem">
             <i data-lucide="thumbs-up" class="w-3.5 h-3.5 ${isUpvoted ? 'fill-current' : ''}"></i>
-            <span>${challenge.supportersCount}</span>
+            <span>${supporterCount}</span>
           </button>
 
           <!-- View Details Button (Phase 2) -->
