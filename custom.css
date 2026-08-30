@@ -1,0 +1,226 @@
+/* ==========================================================================
+   SAMADHAN SETU — Custom Design System & UI Enhancements
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1E293B;
+  background-color: #FAF8F5;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1ECE6;
+}
+::-webkit-scrollbar-thumb {
+  background: #C25E30;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A1461D;
+}
+
+/* Color Classes */
+.text-terracotta { color: #C25E30; }
+.bg-terracotta { background-color: #C25E30; }
+.border-terracotta { border-color: #C25E30; }
+
+.text-sal { color: #24543D; }
+.bg-sal { background-color: #24543D; }
+.border-sal { border-color: #24543D; }
+
+.text-ochre { color: #D97706; }
+.bg-ochre { background-color: #D97706; }
+.border-ochre { border-color: #D97706; }
+
+/* Interactive Cards & Buttons */
+.card-hover-lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+.card-hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px -8px rgba(36, 84, 61, 0.12), 0 4px 12px -2px rgba(194, 94, 48, 0.08);
+}
+
+.btn-primary-setu {
+  background: linear-gradient(135deg, #C25E30 0%, #D97706 100%);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.625rem;
+  box-shadow: 0 4px 14px 0 rgba(194, 94, 48, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-primary-setu:hover {
+  background: linear-gradient(135deg, #A84920 0%, #B45309 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(194, 94, 48, 0.45);
+}
+
+.btn-secondary-setu {
+  background: #FFFFFF;
+  color: #24543D;
+  border: 1.5px solid #24543D;
+  font-weight: 600;
+  border-radius: 0.625rem;
+  transition: all 0.2s ease;
+}
+.btn-secondary-setu:hover {
+  background: #EBF3EE;
+  border-color: #173828;
+  color: #173828;
+  transform: translateY(-2px);
+}
+
+.btn-sal-setu {
+  background: linear-gradient(135deg, #24543D 0%, #173828 100%);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.625rem;
+  box-shadow: 0 4px 14px 0 rgba(36, 84, 61, 0.3);
+  transition: all 0.2s ease;
+}
+.btn-sal-setu:hover {
+  background: linear-gradient(135deg, #1C402E 0%, #0F251A 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(36, 84, 61, 0.4);
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(230, 222, 210, 0.8);
+}
+
+.glass-panel-dark {
+  background: rgba(28, 36, 33, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(194, 94, 48, 0.25);
+}
+
+/* Animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes bridgeFlow {
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+.animate-bridge-flow {
+  stroke-dasharray: 10, 8;
+  animation: bridgeFlow 8s linear infinite;
+}
+
+/* Journey Flow Badge */
+.journey-step-badge {
+  position: relative;
+}
+.journey-step-badge:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #C25E30;
+  font-weight: 700;
+  font-size: 1rem;
+}
+@media (max-width: 768px) {
+  .journey-step-badge:not(:last-child)::after {
+    display: none;
+  }
+}
+
+/* Modal Animations */
+.modal-backdrop {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  transition: opacity 0.25s ease-out;
+}
+.modal-content-animated {
+  animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes modalPopIn {
+  0% { opacity: 0; transform: scale(0.94) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Toast Notification */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast-msg {
+  pointer-events: auto;
+  min-width: 300px;
+  max-width: 420px;
+  background: #1C2421;
+  color: #FFFFFF;
+  border-left: 4px solid #C25E30;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Status Badges */
+.badge-status-open {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+.badge-status-collab {
+  background-color: #EBF3EE;
+  color: #173828;
+  border: 1px solid #C4DCCE;
+}
+.badge-status-pilot {
+  background-color: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+.badge-status-solved {
+  background-color: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+}
