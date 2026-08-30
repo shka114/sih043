@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samadhan Setu - Authentication Test</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Samadhan Setu</h1>
+  <h2>Authentication Test</h2>
+
+  <h3>Sign Up</h3>
+
+  <input
+    type="text"
+    id="signup-name"
+    placeholder="Your name"
+  >
+
+  <input
+    type="email"
+    id="signup-email"
+    placeholder="Email"
+  >
+
+  <input
+    type="password"
+    id="signup-password"
+    placeholder="Password"
+  >
+
+  <select id="signup-role">
+    <option value="citizen">Citizen</option>
+    <option value="university">University</option>
+    <option value="industry">Industry</option>
+    <option value="government">Government</option>
+  </select>
+
+  <button onclick="handleSignup()">
+    Create Account
+  </button>
+
+
+  <hr>
+
+
+  <h3>Login</h3>
+
+  <input
+    type="email"
+    id="login-email"
+    placeholder="Email"
+  >
+
+  <input
+    type="password"
+    id="login-password"
+    placeholder="Password"
+  >
+
+  <button onclick="handleLogin()">
+    Login
+  </button>
+
+  <button onclick="handleLogout()">
+    Logout
+  </button>
+
+  <div id="message"></div>
+
+
+  <!-- Supabase library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- YOUR authentication code -->
+  <script src="supabase_auth.js"></script>
+
+  <script>
+
+   async function handleSignup() {
+
+  const name = document.getElementById("signup-name").value.trim();
+  const email = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value;
+  const role = document.getElementById("signup-role").value;
+
+  if (!name || !email || !password) {
+    document.getElementById("message").textContent =
+      "Please fill all signup fields.";
+    return;
+  }
+
+  const { data, error } =
+    await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          name: name,
+          role: role
+        }
+      }
+    });
+
+  console.log("Signup data:", data);
+  console.log("Signup error:", error);
+
+  if (error) {
+    document.getElementById("message").textContent =
+      "Signup failed: " + error.message;
+    return;
+  }
+
+  if (data.user) {
+    document.getElementById("message").textContent =
+      "Signup successful! User ID: " + data.user.id;
+  } else {
+    document.getElementById("message").textContent =
+      "Signup returned no user.";
+  }
+}
+
+
+    async function handleLogin() {
+
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+      if (error) {
+        document.getElementById("message").textContent =
+          "Login failed: " + error.message;
+        return;
+      }
+
+      document.getElementById("message").textContent =
+        "Login successful! Welcome " +
+        (data.user.user_metadata?.name || "User");
+    }
+
+
+    async function handleLogout() {
+
+      const { error } =
+        await supabaseClient.auth.signOut();
+
+      if (error) {
+        document.getElementById("message").textContent =
+          "Logout failed: " + error.message;
+        return;
+      }
+
+      document.getElementById("message").textContent =
+        "Logged out successfully.";
+    }
+
+  </script>
+
+</body>
+</html>
