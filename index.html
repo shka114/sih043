@@ -79,17 +79,27 @@
     </div>
   </div>
 
+  <!-- Animated Splash Screen Mount Point -->
+  <div id="splash-root"></div>
+
   <!-- Global Modal Mount Point -->
   <div id="modal-root"></div>
 
   <!-- Global Toast Notifications Mount Point -->
   <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
+  <!-- Supabase JS Client & Auth -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth/supabase_auth.js"></script>
+
   <!-- Data Models -->
   <script src="js/data/categories.js"></script>
   <script src="js/data/challenges.js"></script>
   <script src="js/data/stakeholders.js"></script>
   <script src="js/data/stats.js"></script>
+
+  <!-- Animated Splash Screen -->
+  <script src="js/components/splashScreen.js"></script>
 
   <!-- Phase 1: Dashboard UI Components -->
   <script src="js/components/navbar.js"></script>

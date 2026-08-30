@@ -18,13 +18,16 @@ function getQueryParam(param) {
 }
 
 function getCurrentUser() {
+  currentUser = JSON.parse(localStorage.getItem('samadhan_user')) || null;
   return currentUser;
 }
 
 function handleLogout() {
   localStorage.removeItem('samadhan_user');
   currentUser = null;
-  showToast("You have been signed out.", "info");
+  if (typeof showToast === 'function') {
+    showToast("You have been signed out.", "info");
+  }
   window.location.hash = "#home";
   renderApp();
 }
@@ -53,14 +56,11 @@ function showToast(message, type = "info") {
   toast.className = 'toast-msg';
 
   let iconName = 'info';
-  let borderClass = 'border-[#C25E30]';
 
   if (type === 'success') {
     iconName = 'check-circle';
-    borderClass = 'border-[#24543D]';
   } else if (type === 'error') {
     iconName = 'alert-triangle';
-    borderClass = 'border-red-600';
   }
 
   toast.innerHTML = `
@@ -69,7 +69,9 @@ function showToast(message, type = "info") {
   `;
 
   container.appendChild(toast);
-  lucide.createIcons();
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    lucide.createIcons();
+  }
 
   setTimeout(() => {
     toast.style.opacity = '0';
@@ -80,7 +82,7 @@ function showToast(message, type = "info") {
         toast.parentNode.removeChild(toast);
       }
     }, 300);
-  }, 3000);
+  }, 3200);
 }
 
 // Main Render Function
@@ -189,7 +191,6 @@ function renderApp() {
       ${renderFooter()}
     `;
   } else {
-    // Default fallback to home
     pageContent = `
       ${renderNavbar('home', user)}
       <main id="main-content">
@@ -204,15 +205,35 @@ function renderApp() {
 
   appRoot.innerHTML = pageContent;
   
-  // Re-initialize icons
-  lucide.createIcons();
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    lucide.createIcons();
+  }
 
-  // Scroll to top
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 // Router Event Listeners
 window.addEventListener('hashchange', renderApp);
-window.addEventListener('DOMContentLoaded', () => {
+
+function initializeAppOnLoad() {
   renderApp();
-});
+
+  // Render & initialize animated splash screen if not seen in current session
+  const splashRoot = document.getElementById('splash-root');
+  if (splashRoot && typeof renderSplashScreen === 'function') {
+    splashRoot.innerHTML = renderSplashScreen();
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+    if (typeof initSplashScreen === 'function') {
+      initSplashScreen();
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initializeAppOnLoad);
+} else {
+  initializeAppOnLoad();
+}
+

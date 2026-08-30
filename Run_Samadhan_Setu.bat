@@ -1,4 +1,6 @@
 @echo off
-title Launching Samadhan Setu
-start "" "index.html"
-exit
+title Samadhan Setu Server
+echo Starting Samadhan Setu Platform...
+start http://localhost:8000
+python server.py
+
