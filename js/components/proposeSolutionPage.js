@@ -159,7 +159,7 @@ function renderProposeSolutionPage(targetProblemId) {
   `;
 }
 
-function handleProposeSolutionFormSubmit(e) {
+async function handleProposeSolutionFormSubmit(e) {
   e.preventDefault();
 
   const problemId = document.getElementById('sol-problem').value;
@@ -167,15 +167,65 @@ function handleProposeSolutionFormSubmit(e) {
   const team = document.getElementById('sol-team').value.trim();
   const desc = document.getElementById('sol-desc').value.trim();
   const impact = document.getElementById('sol-impact').value.trim();
+  const submitBtn = e.target.querySelector('button[type="submit"]');
 
-  addProblemSolution(problemId, {
-    title: title,
-    team: team,
-    description: desc,
-    impact: impact
-  });
+  if (!problemId || !title || !team || !desc || !impact) {
+    showToast("Please fill in all required fields marked with *.", "error");
+    return;
+  }
 
-  solutionSuccessProblemId = problemId;
-  showToast("Solution submitted successfully!", "success");
-  renderApp();
+  const authUser = await getCurrentAuthUser();
+  if (!authUser) {
+    showToast("Please sign in or register to submit a solution to the public database.", "error");
+    window.location.hash = "#login";
+    renderApp();
+    return;
+  }
+
+  const originalBtnContent = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg class="w-4 h-4 animate-spin inline mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+        <path d="M12 2a10 10 0 0 1 10 10"></path>
+      </svg>
+      <span>Submitting Solution...</span>
+    `;
+  }
+
+  try {
+    let dbSolution = null;
+    // If the problemId is a valid UUID, insert to Supabase Solutions table
+    if (problemId && problemId.length >= 30) {
+      dbSolution = await insertSolutionToDB({
+        problemId: problemId,
+        title: title,
+        team: team,
+        description: desc,
+        impact: impact
+      });
+    }
+
+    addProblemSolution(problemId, {
+      id: dbSolution ? dbSolution.solution_id : undefined,
+      title: title,
+      team: team,
+      description: desc,
+      impact: impact
+    });
+
+    solutionSuccessProblemId = problemId;
+    showToast("Solution submitted and recorded successfully!", "success");
+    renderApp();
+  } catch (err) {
+    console.error("Solution submission error:", err);
+    showToast(err.message || "Failed to submit solution.", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnContent;
+      lucide.createIcons();
+    }
+  }
 }

@@ -174,13 +174,14 @@ function renderCollaboratePage(targetProblemId) {
   `;
 }
 
-function handleSimpleCollabSubmit(e) {
+async function handleSimpleCollabSubmit(e) {
   e.preventDefault();
 
   const problemId = document.getElementById('c-problem').value;
   const name = document.getElementById('c-name').value.trim();
   const contact = document.getElementById('c-contact').value.trim();
   const msg = document.getElementById('c-msg').value.trim();
+  const submitBtn = e.target.querySelector('button[type="submit"]');
 
   const checkedBoxes = document.querySelectorAll('input[name="help_category"]:checked');
   const selectedTypes = Array.from(checkedBoxes).map(cb => cb.value);
@@ -190,21 +191,100 @@ function handleSimpleCollabSubmit(e) {
     return;
   }
 
-  const problem = getChallengeById(problemId);
-  const targetTitle = problem ? problem.title : "General Support";
+  if (!name || !contact || !msg) {
+    showToast("Please fill in all required fields marked with *.", "error");
+    return;
+  }
 
-  const record = addCollaborationOffer({
-    problemId: problemId,
-    targetTitle: targetTitle,
-    name: name,
-    contact: contact,
-    helpTypes: selectedTypes,
-    message: msg
-  });
+  const authUser = await getCurrentAuthUser();
+  if (!authUser) {
+    showToast("Please sign in or register to record your collaboration on the platform.", "error");
+    window.location.hash = "#login";
+    renderApp();
+    return;
+  }
 
-  collabSuccessRecord = record;
-  showToast("Collaboration submitted successfully!", "success");
-  renderApp();
+  const originalBtnContent = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg class="w-4 h-4 animate-spin inline mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+        <path d="M12 2a10 10 0 0 1 10 10"></path>
+      </svg>
+      <span>Submitting Collaboration...</span>
+    `;
+  }
+
+  try {
+    const problem = getChallengeById(problemId);
+    const targetTitle = problem ? problem.title : "General Support";
+
+    // Insert to Supabase Teams / Partner tables where applicable
+    if (selectedTypes.includes("Funding") || (typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'industry')) {
+      try {
+        await insertIndustryPartnerToDB({
+          companyName: name,
+          partnerType: "Industry / CSR Partner",
+          expertise: selectedTypes.join(', '),
+          description: msg,
+          email: contact.includes('@') ? contact : '',
+          phone: !contact.includes('@') ? contact : ''
+        });
+      } catch (indErr) {
+        console.warn("Industry partner insert note:", indErr.message);
+      }
+    } else if (selectedTypes.includes("Research") || (typeof currentUser !== 'undefined' && currentUser && (currentUser.role === 'university' || currentUser.role === 'ngo'))) {
+      try {
+        await insertInstitutionToDB({
+          name: name,
+          type: currentUser?.role === 'ngo' ? 'NGO / Civil Society' : 'University / Research Lab',
+          location: 'Jharkhand',
+          expertise: selectedTypes.join(', '),
+          description: msg,
+          email: contact.includes('@') ? contact : ''
+        });
+      } catch (instErr) {
+        console.warn("Institution insert note:", instErr.message);
+      }
+    }
+
+    if (problemId && problemId.length >= 30) {
+      try {
+        await insertTeamMemberToDB({
+          problemId: problemId,
+          memberName: name,
+          memberRole: selectedTypes.join(', '),
+          targetTitle: targetTitle,
+          message: msg
+        });
+      } catch (teamErr) {
+        console.warn("Team member insert note:", teamErr.message);
+      }
+    }
+
+    const record = addCollaborationOffer({
+      problemId: problemId,
+      targetTitle: targetTitle,
+      name: name,
+      contact: contact,
+      helpTypes: selectedTypes,
+      message: msg
+    });
+
+    collabSuccessRecord = record;
+    showToast("Collaboration offer submitted and registered successfully!", "success");
+    renderApp();
+  } catch (err) {
+    console.error("Collaboration submit error:", err);
+    showToast(err.message || "Failed to submit collaboration.", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnContent;
+      lucide.createIcons();
+    }
+  }
 }
 
 function resetCollabState() {

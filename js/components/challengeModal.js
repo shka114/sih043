@@ -217,17 +217,35 @@ function toggleSolutionForm() {
   if (f) f.classList.toggle('hidden');
 }
 
-function handleNewSolutionSubmit(e, challengeId) {
+async function handleNewSolutionSubmit(e, challengeId) {
   e.preventDefault();
-  const challenge = ACTIVE_CHALLENGES.find(c => c.id === challengeId);
+  const challenge = ACTIVE_CHALLENGES.find(c => c.id === challengeId || c.dbId === challengeId);
   if (!challenge) return;
 
-  const title = document.getElementById('sol-title').value;
-  const team = document.getElementById('sol-team').value;
-  const summary = document.getElementById('sol-summary').value;
+  const title = document.getElementById('sol-title').value.trim();
+  const team = document.getElementById('sol-team').value.trim();
+  const summary = document.getElementById('sol-summary').value.trim();
 
+  let dbSolution = null;
+  const authUser = typeof getCurrentAuthUser === 'function' ? await getCurrentAuthUser() : null;
+
+  if (challengeId && challengeId.length >= 30 && authUser) {
+    try {
+      dbSolution = await insertSolutionToDB({
+        problemId: challengeId,
+        title: title,
+        team: team,
+        description: summary,
+        impact: summary
+      });
+    } catch (solErr) {
+      console.warn("Could not insert solution to Supabase from modal:", solErr);
+    }
+  }
+
+  if (!challenge.solutionsList) challenge.solutionsList = [];
   challenge.solutionsList.push({
-    id: "SOL-" + (challenge.solutionsList.length + 1),
+    id: dbSolution ? dbSolution.solution_id : ("SOL-" + (challenge.solutionsList.length + 1)),
     title: title,
     submittedBy: team,
     status: "Under Review",

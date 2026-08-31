@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Samadhan Setu — Societal Innovation Collaboration Portal | SIH26043</title>
-  
   <meta name="description" content="A public-impact digital platform connecting citizens facing real-world societal problems with students, universities, institutions, industries and NGOs to crowdsource and implement solutions.">
   <meta name="keywords" content="Samadhan Setu, Smart India Hackathon, SIH26043, Societal Innovation, Crowdsourcing, Jharkhand, Public Problem Portal, Hackathon">
   <meta name="theme-color" content="#C25E30">
@@ -21,28 +20,9 @@
       theme: {
         extend: {
           colors: {
-            terracotta: {
-              DEFAULT: '#C25E30',
-              50: '#FAF2ED',
-              100: '#F4E8E1',
-              500: '#C25E30',
-              600: '#A1461D',
-              700: '#833413'
-            },
-            sal: {
-              DEFAULT: '#24543D',
-              50: '#EBF3EE',
-              100: '#D5E6DC',
-              500: '#24543D',
-              600: '#1B422F',
-              700: '#122E20'
-            },
-            ochre: {
-              DEFAULT: '#D97706',
-              50: '#FEF3C7',
-              500: '#D97706',
-              600: '#B45309'
-            },
+            terracotta: { DEFAULT: '#C25E30', 50: '#FAF2ED', 100: '#F4E8E1', 500: '#C25E30', 600: '#A1461D', 700: '#833413' },
+            sal: { DEFAULT: '#24543D', 50: '#EBF3EE', 100: '#D5E6DC', 500: '#24543D', 600: '#1B422F', 700: '#122E20' },
+            ochre: { DEFAULT: '#D97706', 50: '#FEF3C7', 500: '#D97706', 600: '#B45309' },
             charcoal: '#1C2421',
             sand: '#FAF8F5'
           },
@@ -55,10 +35,11 @@
     }
   </script>
 
-  <!-- Lucide Icons CDN -->
+  <!-- Lucide Icons & Supabase JS SDK -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Custom & Tribal Styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="css/tribal-patterns.css">
   <link rel="stylesheet" href="css/custom.css">
 </head>
@@ -66,7 +47,6 @@
 
   <!-- Main Application Mount Point -->
   <div id="app-root" class="flex-grow flex flex-col">
-    <!-- Initial Loading Fallback Skeleton -->
     <div class="h-screen flex flex-col items-center justify-center space-y-4">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C25E30] to-[#D97706] flex items-center justify-center text-white">
         <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,11 +59,13 @@
     </div>
   </div>
 
-  <!-- Global Modal Mount Point -->
+  <!-- Splash, Modal & Toast Containers -->
+  <div id="splash-root"></div>
   <div id="modal-root"></div>
-
-  <!-- Global Toast Notifications Mount Point -->
   <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Supabase Client Configuration & Database Services -->
+  <script src="js/supabaseClient.js"></script>
 
   <!-- Data Models -->
   <script src="js/data/categories.js"></script>
@@ -92,6 +74,7 @@
   <script src="js/data/stats.js"></script>
 
   <!-- Phase 1: Dashboard UI Components -->
+  <script src="js/components/splashScreen.js"></script>
   <script src="js/components/navbar.js"></script>
   <script src="js/components/heroIllustration.js"></script>
   <script src="js/components/hero.js"></script>

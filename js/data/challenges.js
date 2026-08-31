@@ -177,7 +177,40 @@ function saveChallengesState() {
 }
 
 function getChallengeById(id) {
-  return ACTIVE_CHALLENGES.find(c => c.id === id) || null;
+  return ACTIVE_CHALLENGES.find(c => c.id === id || c.dbId === id) || null;
+}
+
+function toggleChallengeUpvote(challengeId) {
+  const challenge = getChallengeById(challengeId);
+  if (!challenge) return null;
+
+  if (challenge.isSupportedByUser) {
+    challenge.isSupportedByUser = false;
+    challenge.supportersCount = Math.max(0, (challenge.supportersCount || 1) - 1);
+  } else {
+    challenge.isSupportedByUser = true;
+    challenge.supportersCount = (challenge.supportersCount || 0) + 1;
+  }
+  saveChallengesState();
+  return challenge;
+}
+
+async function syncLiveProblems() {
+  if (typeof fetchProblemsFromDB === 'function') {
+    try {
+      const dbProblems = await fetchProblemsFromDB();
+      if (dbProblems && dbProblems.length > 0) {
+        const dbIds = new Set(dbProblems.map(p => p.id));
+        const nonDuplicateInitial = INITIAL_CHALLENGES.filter(p => !dbIds.has(p.id));
+        ACTIVE_CHALLENGES = [...dbProblems, ...nonDuplicateInitial];
+        saveChallengesState();
+        return ACTIVE_CHALLENGES;
+      }
+    } catch (e) {
+      console.warn("Could not sync problems from DB:", e);
+    }
+  }
+  return ACTIVE_CHALLENGES;
 }
 
 function addChallenge(problem) {
@@ -189,7 +222,9 @@ function addChallenge(problem) {
 
   // Also record in user's raised problems in localStorage
   let userRaised = JSON.parse(localStorage.getItem('samadhan_user_raised')) || [];
-  userRaised.unshift(problem.id);
+  if (!userRaised.includes(problem.id)) {
+    userRaised.unshift(problem.id);
+  }
   localStorage.setItem('samadhan_user_raised', JSON.stringify(userRaised));
 
   return problem;
@@ -201,12 +236,13 @@ function addProblemSolution(problemId, solutionData) {
     if (!problem.solutionsList) problem.solutionsList = [];
     
     const newSolution = {
-      id: "SOL-" + String(100 + problem.solutionsList.length + 1),
+      id: solutionData.id || ("SOL-" + String(100 + problem.solutionsList.length + 1)),
+      solutionId: solutionData.id || null,
       title: solutionData.title,
       problemId: problemId,
       problemTitle: problem.title,
       location: problem.location,
-      submittedBy: solutionData.team || solutionData.authorName || "Student / Innovator Team",
+      submittedBy: solutionData.team || solutionData.authorName || (typeof currentUser !== 'undefined' && currentUser ? currentUser.name : "Student / Innovator Team"),
       currentStage: "Solution Proposed",
       description: solutionData.description,
       expectedImpact: solutionData.impact || "Community benefit and problem mitigation.",
@@ -283,9 +319,8 @@ function getUserContributions() {
   const userCollabs = JSON.parse(localStorage.getItem('samadhan_collaborations')) || [];
 
   // Match raised problems from ACTIVE_CHALLENGES
-  const userProblems = ACTIVE_CHALLENGES.filter(p => userRaisedIds.includes(p.id));
+  const userProblems = ACTIVE_CHALLENGES.filter(p => userRaisedIds.includes(p.id) || (typeof currentUser !== 'undefined' && currentUser && p.authorId === currentUser.id));
 
-  // Add at least 1 default demo contribution if user hasn't created one yet
   return {
     problemsRaised: userProblems,
     solutionsProposed: userSolutions,
@@ -299,6 +334,8 @@ if (typeof module !== 'undefined' && module.exports) {
     INITIAL_CHALLENGES,
     ACTIVE_CHALLENGES,
     getChallengeById,
+    toggleChallengeUpvote,
+    syncLiveProblems,
     addChallenge,
     addProblemSolution,
     addCollaborationOffer,
